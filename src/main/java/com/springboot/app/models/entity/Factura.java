@@ -24,11 +24,6 @@ import jakarta.persistence.TemporalType;
 @Table(name = "facturas")
 public class Factura implements Serializable {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
@@ -107,4 +102,21 @@ public class Factura implements Serializable {
 	public void addItemFacura(ItemFactura item) {
 		this.items.add(item);
 	}
+	
+	public Double getTotal() {
+		Double total = 0.0;
+		
+		int size = items.size();
+		
+		for(int i=0; i < size; i++) {
+			total += items.get(i).calcularImporte();
+		}
+		
+		return total;
+	}
+	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 }
