@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <body>
+
 	<script type="text/javascript" th:fragment="javascript">
 		$(document).ready(function() {
 			
@@ -45,6 +46,11 @@
 				}
 				
 			});
+			
+			$("form").submit(function(){
+				$("#plantillaItemsFactura").remove();
+				return;
+			});
 		});
 		
 		var itemsHelper = {
@@ -61,6 +67,7 @@
 							resultado = true;
 						}	
 					});
+					
 					return resultado;
 				},
 				incrementaCantidad: function(id, precio) {
@@ -82,7 +89,6 @@
 					$('#gran_total').html(total);
 				}
 		}
-	
 	</script>
 </body>
 </html>
