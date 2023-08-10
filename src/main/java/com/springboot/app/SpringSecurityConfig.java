@@ -1,7 +1,9 @@
 package com.springboot.app;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -9,9 +11,15 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 
+import com.springboot.app.auth.handler.LoginSuccesHandler;
+
 
 @Configuration
+@EnableMethodSecurity(securedEnabled = true, prePostEnabled = true)
 public class SpringSecurityConfig {
+	
+	@Autowired
+	private LoginSuccesHandler successHandler;
 	
     @Bean
     static BCryptPasswordEncoder passwordEncoder() {
@@ -35,13 +43,14 @@ public class SpringSecurityConfig {
 		http.authorizeHttpRequests((authz) -> {
 			try {
 				authz.requestMatchers("/", "/css/**", "/js/**", "/images/**", "/listar").permitAll()
-				.requestMatchers("/uploads/**").hasAnyRole("USER")
-				.requestMatchers("/factura/**").hasRole("ADMIN")
-				.requestMatchers("/form/**").hasRole("ADMIN")
-				.requestMatchers("/eliminar/**").hasRole("ADMIN")
+				/*.requestMatchers("/uploads/**").hasAnyRole("USER")*/
+				/*.requestMatchers("/factura/**").hasRole("ADMIN")*/
+				/*.requestMatchers("/form/**").hasRole("ADMIN")*/
+				/*.requestMatchers("/eliminar/**").hasRole("ADMIN")*/
 				.anyRequest().authenticated()
 				.and()
-					.formLogin().loginPage("/login")
+					.formLogin().successHandler(successHandler)
+					.loginPage("/login")
 					.permitAll()
 				.and()
 				.logout().permitAll()
