@@ -1,16 +1,17 @@
 package com.springboot.app;
 
+import javax.sql.DataSource;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
-
 import com.springboot.app.auth.handler.LoginSuccesHandler;
 
 
@@ -21,28 +22,59 @@ public class SpringSecurityConfig {
 	@Autowired
 	private LoginSuccesHandler successHandler;
 	
-    @Bean
-    static BCryptPasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
+    @Autowired
+    private BCryptPasswordEncoder passwordEncoder;
+    
+    @Autowired
+	private DataSource dataSource;
 	
-	@Bean
+	/*
+    @Bean
 	public UserDetailsService userDetailsService() throws Exception {
 		
 		InMemoryUserDetailsManager manager = new InMemoryUserDetailsManager();
 		
-		manager.createUser(User.withUsername("user").password(passwordEncoder().encode("user")).roles("USER").build());
-		manager.createUser(User.withUsername("admin").password(passwordEncoder().encode("admin")).roles("ADMIN", "USER").build());
+		manager.createUser(User.withUsername("user").password(this.passwordEncoder.encode("user")).roles("USER").build());
+		manager.createUser(User.withUsername("admin").password(this.passwordEncoder.encode("admin")).roles("ADMIN", "USER").build());
 		
 		return manager;
 	}
+	*/
+    
+    @Bean
+    UserDetailsService userDetailsService(AuthenticationManagerBuilder build) throws Exception {
+
+    	build.jdbcAuthentication()
+    		.dataSource(dataSource)
+    		.passwordEncoder(passwordEncoder)
+    		.usersByUsernameQuery("select username, password, enabled from users where username=?")
+    		.authoritiesByUsernameQuery("select u.username, a.authority from authorities a inner join users u on (a.user_id=u.id) where u.username=?");
+    	
+    	return build.getDefaultUserDetailsService();
+
+    }
+    
+    /*
+    @Autowired
+    @Bean
+    public AuthenticationManager authManager(HttpSecurity http) throws Exception {
+    	return http.getSharedObject(AuthenticationManagerBuilder.class)
+    			.jdbcAuthentication()
+    			.dataSource(dataSource)
+    			.passwordEncoder(passwordEncoder)
+    			.usersByUsernameQuery("select username, password, enabled from users where username=?")
+    			.authoritiesByUsernameQuery("select u.username, a.authority from authorities a inner join users u on (a.user_id=u.id) where u.username=?")
+    			.and().build();
+    }
+    */
 	
 	@Bean
-	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+	SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 		
 		http.authorizeHttpRequests((authz) -> {
 			try {
 				authz.requestMatchers("/", "/css/**", "/js/**", "/images/**", "/listar").permitAll()
+				/*.requestMatchers("/ver/**").hasAnyRole("USER")*/
 				/*.requestMatchers("/uploads/**").hasAnyRole("USER")*/
 				/*.requestMatchers("/factura/**").hasRole("ADMIN")*/
 				/*.requestMatchers("/form/**").hasRole("ADMIN")*/
