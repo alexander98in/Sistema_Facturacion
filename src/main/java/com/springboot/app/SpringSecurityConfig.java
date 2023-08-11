@@ -13,6 +13,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import com.springboot.app.auth.handler.LoginSuccesHandler;
+import com.springboot.app.models.service.JpaUserDetailsService;
 
 
 @Configuration
@@ -26,9 +27,13 @@ public class SpringSecurityConfig {
     private BCryptPasswordEncoder passwordEncoder;
     
     @Autowired
+    private JpaUserDetailsService userDetailService;
+    
+	/* 
+	
+	@Autowired
 	private DataSource dataSource;
 	
-	/*
     @Bean
 	public UserDetailsService userDetailsService() throws Exception {
 		
@@ -41,9 +46,17 @@ public class SpringSecurityConfig {
 	}
 	*/
     
+    @Autowired
+    public void userDetailsService(AuthenticationManagerBuilder build) throws Exception {
+    	
+    	build.userDetailsService(userDetailService)
+    		.passwordEncoder(passwordEncoder);
+    }
+    
+    /*
     @Bean
-    UserDetailsService userDetailsService(AuthenticationManagerBuilder build) throws Exception {
-
+    public UserDetailsService userDetailsService(AuthenticationManagerBuilder build) throws Exception {
+    	
     	build.jdbcAuthentication()
     		.dataSource(dataSource)
     		.passwordEncoder(passwordEncoder)
@@ -51,22 +64,9 @@ public class SpringSecurityConfig {
     		.authoritiesByUsernameQuery("select u.username, a.authority from authorities a inner join users u on (a.user_id=u.id) where u.username=?");
     	
     	return build.getDefaultUserDetailsService();
-
-    }
-    
-    /*
-    @Autowired
-    @Bean
-    public AuthenticationManager authManager(HttpSecurity http) throws Exception {
-    	return http.getSharedObject(AuthenticationManagerBuilder.class)
-    			.jdbcAuthentication()
-    			.dataSource(dataSource)
-    			.passwordEncoder(passwordEncoder)
-    			.usersByUsernameQuery("select username, password, enabled from users where username=?")
-    			.authoritiesByUsernameQuery("select u.username, a.authority from authorities a inner join users u on (a.user_id=u.id) where u.username=?")
-    			.and().build();
     }
     */
+    
 	
 	@Bean
 	SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
