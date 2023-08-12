@@ -17,7 +17,7 @@
 
 	<header th:fragment="header">
 		<nav class="navbar navbar-expand-md navbar-dark bg-dark">
-			<a class="navbar-brand" href="#" style="margin-left: 80px">Spring Boot</a>
+			<a class="navbar-brand" href="#" style="margin-left: 20px">Spring Boot</a>
 			<button class="navbar-toggler" type="button" data-toggle="collapse"
 				data-target="#navbarNav" aria-controls="navbarNav"
 				aria-expanded="false" aria-label="Toggle navigation">
@@ -31,7 +31,7 @@
 					</li>
 				</ul>
 
-				<ul class="navbar-nav navbar-right" style="margin-right: 80px">
+				<ul class="navbar-nav navbar-right">
 					<li sec:authorize="!isAuthenticated()">
 						<a class="btn btn-outline-primary" th:href="@{/login}">Sign In</a>
 					</li>
@@ -42,7 +42,7 @@
 							<span sec:authentication="name"></span>
 						</a>
 
-						<ul class="dropdown-menu" style="width: 100px">
+						<div class="dropdown-menu" style="width: 100px">
 							<form id="logoutForm" th:action="@{/logout}" method="post">
 								<button class="dropdown-item text-center"  onclick="document.getElementById('logoutForm').submit();" 
 									type="submit">
@@ -50,9 +50,38 @@
 								</button>
 								<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
 							</form>	
-						</ul>
+						</div>
 					</li>
-
+				</ul>
+				
+				<ul class="navbar-nav navbar-right mx-4">
+					<li class="nav-item mx-1"><a class="btn btn-outline-success"
+						th:href="@{/locale(lang=es_ES)}">ES</a></li>
+					<li class="nav-item mx-1"><a class="btn btn-outline-success"
+						th:href="@{/locale(lang=en_EN)}">EN</a></li>
+					<li class="nav-item mx-1"><a class="btn btn-outline-success"
+						th:href="@{/locale(lang=de_DE)}">DE</a></li>
+					 
+					<li class="nav-item dropdown show mx-2">	
+						<a class="btn btn-outline-primary dropdown-toggle" href="#" 
+							role="button" data-bs-toggle="dropdown" aria-expanded="false">
+							<span th:text="#{text.locale.language}"></span>
+						</a>
+						<div class="dropdown-menu">
+							<a class="dropdown-item" th:href="@{/locale(lang=es_ES)}"
+								th:text="#{text.locale.es}">
+								ES
+							</a>
+							<a class="dropdown-item" th:href="@{/locale(lang=en_US)}" 
+								th:text="#{text.locale.en}">
+								EN
+							</a>
+							<a class="dropdown-item" th:href="@{/locale(lang=de_DE)}"
+								th:text="#{text.locale.de}">
+								DE
+							</a>	
+						</div>
+					</li>
 				</ul>
 			</div>
 		</nav>

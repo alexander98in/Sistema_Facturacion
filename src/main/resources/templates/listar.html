@@ -19,11 +19,11 @@
 				<table class="table table-striped">
 					<thead class="bg-light">
 						<tr>
-							<th sec:authorize="hasRole('ROLE_USER')">id</th>
-							<th>nombre</th>
-							<th>apellido</th>
-							<th>email</th>
-							<th>fecha</th>
+							<th sec:authorize="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')">id</th>
+							<th th:text="#{text.cliente.nombre}">nombre</th>
+							<th th:text="#{text.cliente.apellido}">apellido</th>
+							<th th:text="#{text.cliente.email}">email</th>
+							<th th:text="#{text.cliente.createAt}">fecha</th>
 							<th sec:authorize="hasRole('ROLE_ADMIN')">crear factura</th>
 							<th sec:authorize="hasRole('ROLE_ADMIN')">editar</th>
 							<th sec:authorize="hasRole('ROLE_ADMIN')">eliminar</th>
@@ -31,7 +31,7 @@
 					</thead>
 					<tbody>
 						<tr th:each="cliente: ${clientes}">
-							<td sec:authorize="hasRole('ROLE_USER')"><a class="btn btn-primary btn-xs"
+							<td sec:authorize="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')"><a class="btn btn-primary btn-xs"
 								th:href="@{/ver/} + ${cliente.id}" th:text="${cliente.id}"></a></td>
 							<td th:text="${cliente.nombre}"></td>
 							<td th:text="${cliente.apellido}"></td>
